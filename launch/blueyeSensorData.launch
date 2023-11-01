@@ -1,0 +1,5 @@
+<launch>
+    <node respawn="true" pkg="blueye_x3_ros" type="depthData.py" name="depthData" output="screen"></node>
+    <node respawn="true" pkg="blueye_x3_ros" type="imuData.py" name="imuData" output="screen"></node>
+    <node respawn="true" pkg="blueye_x3_ros" type="statePub.py" name="statePub" output="screen"></node>
+</launch>
