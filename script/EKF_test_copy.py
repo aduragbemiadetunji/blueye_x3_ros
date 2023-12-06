@@ -19,8 +19,13 @@ class ExtendedKalmanFilter:
         #####for my project#####
         # initial_state = np.zeros(12)
         initial_covariance = np.zeros((12, 12))
-        process_noise_covariance = 0.6*np.eye(12) #process_noise_covariance = 1*np.eye(12) 0.6
-        measurement_noise_covariance = 0.01*np.eye(3) #0.02
+        # process_noise_covariance = 0.6*np.eye(12) #process_noise_covariance = 1*np.eye(12) 0.6
+        # measurement_noise_covariance = 0.01*np.eye(8) #0.02 change this too
+
+        pnc = [0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6]
+        mnc = [0.005, 0.005, 0.002, 0.01, 0.01, 0.01, 0.01, 0.01]
+        process_noise_covariance = np.diag(pnc)
+        measurement_noise_covariance = np.diag(mnc)
         #############################
 
         self.state_estimate = initial_state
@@ -130,8 +135,10 @@ def state_transition_jacobian(state):
 #     return np.array([z, psi, r])
 
 def observation_function(state):
-    z, psi, r = state[2], state[3], state[7]
-    return np.array([z, psi, r])
+    x, y, z, psi, u, v, w, r = state[0], state[1], state[2], state[3], state[4], state[5], state[6], state[7]
+    return np.array([x, y, z, psi, u, v, w, r])
+    # x, y, z, psi, r = state[0], state[1], state[2], state[3], state[7]
+    # return np.array([x, y, z, psi, r])
 
 # def observation_jacobian(state):
 #     return np.eye(4)
@@ -147,10 +154,22 @@ def observation_function(state):
 
 def observation_jacobian(state):
     return np.array([
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0]
     ])
+    # return np.array([
+    #     [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    #     [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    #     [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    #     [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+    #     [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0]
+    # ])
 
 error_jacobian = np.vstack((np.zeros((8, 4)), np.eye(4)))
 
@@ -172,8 +191,8 @@ def tauValues(msg):
 
 def stateEstimator(msg):
     global input
-    
     init_state = True
+
     initial_state = np.zeros(12)
     state_EKF_msg = BlueyeState()
 
@@ -186,8 +205,13 @@ def stateEstimator(msg):
 
     # print(input)
 
+    state_x = msg.x
+    state_y = msg.y
     state_z = msg.z
     state_yaw = msg.psi
+    state_u = msg.u
+    state_v = msg.v
+    state_w = msg.w
     state_yaw_rate = msg.r
 
 
@@ -208,7 +232,7 @@ def stateEstimator(msg):
     ekf.predict()
     # Provide the observed measurement for the update step
     # observed_measurement = np.array([1, 2, 3])  # Replace with actual observed measurement
-    observed_measurement = np.array([state_z, state_yaw, state_yaw_rate])  # Replace with actual observed measurement
+    observed_measurement = np.array([state_x, state_y, state_z, state_yaw, state_u, state_v, state_w, state_yaw_rate])  # Replace with actual observed measurement
     ekf.update(observed_measurement)
 
     # Print the final state estimate and covariance estimate
@@ -236,7 +260,7 @@ def stateEstimator(msg):
 if __name__ == "__main__":
     rospy.init_node("blueye_EKF_state_publisher")
     # state_publisher = rospy.Publisher("/blueye_x3/state/EKF", BlueyeState, queue_size=10)
-    state_publisher = rospy.Publisher("/blueye_x3/state/EKF", BlueyeState, queue_size=10)
+    state_publisher = rospy.Publisher("/blueye_x3/state/EKF_new", BlueyeState, queue_size=10)
     subscriber()
     
     try:

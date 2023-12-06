@@ -61,6 +61,8 @@ find_package(catkin REQUIRED COMPONENTS
    BlueyeImu.msg
    BlueyeDepth.msg
    BlueyeState.msg
+   BlueyeForce.msg
+   BlueyeForceRef.msg
   #  Header.msg
  )
 

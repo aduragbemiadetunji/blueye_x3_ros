@@ -81,8 +81,8 @@ if __name__ == "__main__":
 
     my_drone = Drone()
     print('Connected to Drone')
-    my_drone.telemetry.set_msg_publish_frequency(bp.Imu1Tel, 10)
-    my_drone.telemetry.set_msg_publish_frequency(bp.Imu2Tel, 10)
+    # my_drone.telemetry.set_msg_publish_frequency(bp.Imu1Tel, 10)
+    # my_drone.telemetry.set_msg_publish_frequency(bp.Imu2Tel, 10)
     my_drone.telemetry.set_msg_publish_frequency(bp.CalibratedImuTel, 10)
 
     # cb_raw = my_drone.telemetry.add_msg_callback([bp.Imu1Tel, bp.Imu2Tel], callback_imu_raw)

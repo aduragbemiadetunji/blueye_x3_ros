@@ -14,7 +14,7 @@
 
 Header header
 
-geometry_msgs/Vector3 orientation
+geometry_msgs/Vector3 orientation #Vector3
 float64[9] orientation_covariance # Row major about x, y, z axes
 
 geometry_msgs/Vector3 angular_velocity

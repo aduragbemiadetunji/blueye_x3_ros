@@ -1,5 +1,15 @@
 <launch>
     <node respawn="true" pkg="blueye_x3_ros" type="depthData.py" name="depthData" output="screen"></node>
     <node respawn="true" pkg="blueye_x3_ros" type="imuData.py" name="imuData" output="screen"></node>
+    <node respawn="true" pkg="blueye_x3_ros" type="thrustData.py" name="thrustData" output="screen"></node>
     <node respawn="true" pkg="blueye_x3_ros" type="statePub.py" name="statePub" output="screen"></node>
+    <node respawn="true" pkg="blueye_x3_ros" type="stateEstimate.py" name="stateEstimate" output="screen"></node>
+    
+      <!-- Launch the waterlinked_a50_ros_driver publisher.py node -->
+  <node name="waterlinked_a50_driver" pkg="waterlinked_a50_ros_driver" type="publisher.py" output="screen">
+    <param name="ip" value="192.168.1.99" />
+    <!-- Add any other required parameters here if needed -->
+  </node>
 </launch>
+
+  <!-- rosrun waterlinked_a50_ros_driver publisher.py _ip:=192.168.1.99 -->
