@@ -61,16 +61,17 @@ def computeThrust(msg):
         control.sway_ref = sway_ref
         control.heave_ref = heave_ref
         control.yaw_ref = yaw_ref
-        ref_val = np.array([surge_ref, sway_ref, heave_ref, yaw_ref])
+        ref_val = np.array([surge_ref, sway_ref, heave_ref, yaw_ref]) #surge_ref, sway_ref, heave_ref, yaw_ref
         init_ref = False
     # reference_point = np.array([ref_x, ref_y, ref_z, np.deg2rad(ref_yaw)])
     reference_point = ref_val
-    Kp = np.array([0.5, 0.3, 1.9, 0.4]) #TUNE x, y, z, yaw 1.8 0.4
-    Ki = np.array([0.2, 0.1, 0.4, 0.09]) #TUNE 0.3 0.09
-    Kd = np.array([0.0, 0.0, 0.5, 0.4]) #TUNE 0.5 0.4
+    # print(reference_point)
+    Kp = np.array([0.5, 0.3, 1.9, 0.35]) #TUNE x, y, z, yaw 0.5 0.3 1.8 0.4 ---u,v 0.03, 0.0005
+    Ki = np.array([0.2, 0.1, 0.4, 0.09]) #TUNE 0.2 0.1 0.3 0.09 --- 0.06, 0.002
+    Kd = np.array([0.001, 0.001, 0.5, 0.4]) #TUNE 0 0 0.5 0.4 -----0.001, 0.001
 
     pos_PID = PID(setpoint=reference_point, Kp=Kp, Ki=Ki, Kd=Kd)
-    feedback_value = np.array([msg.x, msg.y, msg.z, np.deg2rad(msg.psi)])
+    feedback_value = np.array([msg.x, msg.y, msg.z, np.deg2rad(msg.psi)]) #msg.x, msg.y, msg.z, np.deg2rad(msg.psi)
     output = pos_PID.compute(feedback_value)
     # print(output)
     writeThrustValues(surge=output[0], sway=output[1], heave=output[2], yaw=output[3])
