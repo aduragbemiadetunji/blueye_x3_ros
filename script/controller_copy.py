@@ -56,22 +56,22 @@ def computeThrust(msg):
 
     
     if init_ref:
-        surge_ref, sway_ref, heave_ref, yaw_ref = msg.x, msg.y, msg.z, np.deg2rad(msg.psi)
+        surge_ref, sway_ref, heave_ref, yaw_ref = 0, 0.2, msg.z, np.deg2rad(msg.psi) #msg.x, msg.y, msg.z, np.deg2rad(msg.psi)
         control.surge_ref = surge_ref
         control.sway_ref = sway_ref
         control.heave_ref = heave_ref
-        control.yaw_ref = yaw_ref
+        control.yaw_ref = np.rad2deg(yaw_ref)
         ref_val = np.array([surge_ref, sway_ref, heave_ref, yaw_ref]) #surge_ref, sway_ref, heave_ref, yaw_ref
         init_ref = False
     # reference_point = np.array([ref_x, ref_y, ref_z, np.deg2rad(ref_yaw)])
     reference_point = ref_val
     # print(reference_point)
-    Kp = np.array([0.5, 0.3, 1.9, 0.35]) #TUNE x, y, z, yaw 0.5 0.3 1.8 0.4 ---u,v 0.03, 0.0005
-    Ki = np.array([0.2, 0.1, 0.4, 0.09]) #TUNE 0.2 0.1 0.3 0.09 --- 0.06, 0.002
-    Kd = np.array([0.001, 0.001, 0.5, 0.4]) #TUNE 0 0 0.5 0.4 -----0.001, 0.001
+    Kp = np.array([0.03, 0.05, 0, 0]) #TUNE x, y, z, yaw 0.5 0.3 1.8 0.4 ---u,v 0.03, 0.0005
+    Ki = np.array([0.06, 0.07, 0, 0]) #TUNE 0.2 0.1 0.3 0.09 --- 0.06, 0.002
+    Kd = np.array([0.001, 0.001, 0, 0]) #TUNE 0 0 0.5 0.4 -----0.001, 0.001
 
     pos_PID = PID(setpoint=reference_point, Kp=Kp, Ki=Ki, Kd=Kd)
-    feedback_value = np.array([msg.x, msg.y, msg.z, np.deg2rad(msg.psi)]) #msg.x, msg.y, msg.z, np.deg2rad(msg.psi)
+    feedback_value = np.array([msg.u, msg.v, msg.z, np.deg2rad(msg.psi)]) #msg.x, msg.y, msg.z, np.deg2rad(msg.psi)
     output = pos_PID.compute(feedback_value)
     # print(output)
     writeThrustValues(surge=output[0], sway=output[1], heave=output[2], yaw=output[3])
@@ -101,7 +101,7 @@ def writeThrustValues(surge=0, sway=0, heave=0, yaw=0):
 
 
 def subscriber():
-    rospy.Subscriber("/blueye_x3/state/EKF_new", BlueyeState, computeThrust)
+    rospy.Subscriber("/blueye_x3/state/velocityEKF", BlueyeState, computeThrust)
 
 
 

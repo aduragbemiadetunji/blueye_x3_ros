@@ -87,20 +87,36 @@ def state_transition_function(state, input):
     wb_z = np.random.normal(scale=np.sqrt(dt))
     wb_psi = np.random.normal(scale=np.sqrt(dt))
     # Given state transition function
+
     return np.array([
         np.cos(psi) * u - np.sin(psi) * v,
         np.cos(psi) * v + np.sin(psi) * u,
         w,
         r,
-        (1315892839236077 * tau1) / 18014398509481984 - (1212595251356045 * u) / 9007199254740992 - 0.78804538217602188355025252290643 * r * v + (1315892839236077 * np.cos(psi) * b_x) / 18014398509481984 - (1315892839236077 * np.sin(psi) * b_y) / 18014398509481984,
-        (5149134226861935 * tau2) / 144115188075855872 - (8187638334133163 * v) / 72057594037927936 - 0.12541456625279259105718470889351 * r * u + (5149134226861935 * np.cos(psi) * b_y) / 144115188075855872 + (5149134226861935 * np.sin(psi) * b_x) / 144115188075855872,
-        (7356743338895695 * b_z) / 144115188075855872 + (7356743338895695 * tau3) / 144115188075855872 + (1389688816717397 * w) / 72057594037927936,
-        (1135129035283523 * b_psi) / 281474976710656 + (6305868816807027 * r) / 18014398509481984 + (1135129035283523 * tau4) / 281474976710656 + 57.662298912638639724630477211478 * u * v,
+        0.073047 * tau1 - 0.13463 * u - 0.7881 * r * v + 0.073047 * np.cos(psi) * b_x - 0.073047 * np.sin(psi) * b_y,
+        0.0357755 * tau2 - 0.113636 * v - 0.1254 * r * u + 0.035729 * np.cos(psi) * b_y + 0.035729 * np.sin(psi) * b_x,
+        0.051048 * b_z + 0.051048 * tau3 + 0.019286 * w,
+        4.0328 * b_psi + 0.35005 * r + 4.0328 * tau4 + 57.6623 * u * v,
         wb_x - 100 * b_x,
         wb_y - 100 * b_y,
         wb_z - 100 * b_z,
         wb_psi - 100 * b_psi
-])
+    ])
+
+#     return np.array([
+#         np.cos(psi) * u - np.sin(psi) * v,
+#         np.cos(psi) * v + np.sin(psi) * u,
+#         w,
+#         r,
+#         (1315892839236077 * tau1) / 18014398509481984 - (1212595251356045 * u) / 9007199254740992 - 0.78804538217602188355025252290643 * r * v + (1315892839236077 * np.cos(psi) * b_x) / 18014398509481984 - (1315892839236077 * np.sin(psi) * b_y) / 18014398509481984,
+#         (5149134226861935 * tau2) / 144115188075855872 - (8187638334133163 * v) / 72057594037927936 - 0.12541456625279259105718470889351 * r * u + (5149134226861935 * np.cos(psi) * b_y) / 144115188075855872 + (5149134226861935 * np.sin(psi) * b_x) / 144115188075855872,
+#         (7356743338895695 * b_z) / 144115188075855872 + (7356743338895695 * tau3) / 144115188075855872 + (1389688816717397 * w) / 72057594037927936,
+#         (1135129035283523 * b_psi) / 281474976710656 + (6305868816807027 * r) / 18014398509481984 + (1135129035283523 * tau4) / 281474976710656 + 57.662298912638639724630477211478 * u * v,
+#         wb_x - 100 * b_x,
+#         wb_y - 100 * b_y,
+#         wb_z - 100 * b_z,
+#         wb_psi - 100 * b_psi
+# ])
 
 # def state_transition_jacobian(state):
 #     # Implement the provided state transition Jacobian matrix here
@@ -260,7 +276,7 @@ def stateEstimator(msg):
 if __name__ == "__main__":
     rospy.init_node("blueye_EKF_state_publisher")
     # state_publisher = rospy.Publisher("/blueye_x3/state/EKF", BlueyeState, queue_size=10)
-    state_publisher = rospy.Publisher("/blueye_x3/state/EKF_new", BlueyeState, queue_size=10)
+    state_publisher = rospy.Publisher("/blueye_x3/state/EKF_coupled", BlueyeState, queue_size=10)
     subscriber()
     
     try:

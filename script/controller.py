@@ -10,7 +10,7 @@ from blueye.sdk import Drone
 ref_x = 1.0
 ref_y = -1.5
 ref_z = 0.4
-ref_yaw = 30
+ref_yaw = 270
 
 myDrone = Drone()
 
@@ -47,9 +47,9 @@ class PID:
 
 def computeThrust(msg):
     reference_point = np.array([ref_x, ref_y, ref_z, np.deg2rad(ref_yaw)])
-    Kp = np.array([0.5, 0.3, 1.9, 0.4]) #TUNE x, y, z, yaw 1.8 0.4
-    Ki = np.array([0.2, 0.1, 0.4, 0.09]) #TUNE 0.3 0.09
-    Kd = np.array([0.0, 0.0, 0.5, 0.4]) #TUNE 0.5 0.4
+    Kp = np.array([0, 0, 0, 0.4]) #TUNE x, y, z, yaw 1.8 0.4 --0.5, 0.3, 1.9, 0.4
+    Ki = np.array([0, 0, 0, 0.09]) #TUNE 0.3 0.09 -- 0.2, 0.1, 0.4, 0.09
+    Kd = np.array([0, 0, 0, 0.4]) #TUNE 0.5 0.4
 
     pos_PID = PID(setpoint=reference_point, Kp=Kp, Ki=Ki, Kd=Kd)
     feedback_value = np.array([msg.x, msg.y, msg.z, np.deg2rad(msg.psi)])
@@ -83,7 +83,7 @@ def writeThrustValues(surge=0, sway=0, heave=0, yaw=0):
 
 
 def subscriber():
-    rospy.Subscriber("/blueye_x3/state/EKF_new", BlueyeState, computeThrust)
+    rospy.Subscriber("/blueye_x3/state/yawEKF", BlueyeState, computeThrust)
 
 
 

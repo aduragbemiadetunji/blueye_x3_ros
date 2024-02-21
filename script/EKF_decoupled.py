@@ -47,75 +47,92 @@ class DecoupledObserver:
 
     def initial_state(self):
         if self.model == 1:
-            return np.zeros((2))
-        elif self.model == 2:
-            return np.zeros((2))
-        elif self.model == 3:
             return np.zeros((3))
+        elif self.model == 2:
+            return np.zeros((3))
+        elif self.model == 3:
+            return np.zeros((4))
         
     def initial_covariance(self):
         if self.model == 1:
-            return np.zeros(2)
-        elif self.model == 2:
-            return np.zeros(2)
-        elif self.model == 3:
             return np.zeros(3)
+        elif self.model == 2:
+            return np.zeros(3)
+        elif self.model == 3:
+            return np.zeros(4)
         
     def process_noise_covariance(self):
         if self.model == 1:
-            return np.diag([0.6, 0.6])
-        elif self.model == 2:
-            return np.diag([0.6, 0.6])
-        elif self.model == 3:
             return np.diag([0.6, 0.6, 0.6])
+        elif self.model == 2:
+            return np.diag([0.6, 0.6, 0.6])
+        elif self.model == 3:
+            return np.diag([0.6, 0.6, 0.6, 0.6])
 
     def measurement_noise_covariance(self):
         if self.model == 1:
             return np.diag([0.01, 0.01]) #psi, r
         elif self.model == 2:
-            return np.diag([0.005]) #z
+            return np.diag([0.005, 0.005]) #z, w
         elif self.model == 3:
-            return np.diag([0.01, 0.01, 0.01]) #u, v, r
+            return np.diag([0.01, 0.01]) #u, v
 
     def state_transition_function(self, state, input):
         # x, y, z, psi, u, v, w, r, b_x, b_y, b_z, b_psi = state
         tau1, tau2, tau3, tau4 = input[0], input[1], input[2], input[3] #15, 12, 5, 6  # Updated values
+        # Wiener processes for bx, by, bz, and bpsi
+        dt = 0.01
+
         if self.model == 1:
-            psi, r = state
+            psi, r, b_psi = state
+            b_psi += np.random.normal(scale=np.sqrt(dt))
+            wb_psi = np.random.normal(scale=np.sqrt(dt))
             return np.array([
                 r,
-                0.35005*r + 4.0328*tau4
+                0.35005*r + 4.0328*tau4 + 4.0328 * b_psi,
+                wb_psi - 100 * b_psi
             ])
         elif self.model == 2:
-            z, w = state
+            z, w, b_z = state
+            b_z += np.random.normal(scale=np.sqrt(dt))
+            wb_z = np.random.normal(scale=np.sqrt(dt))
             return np.array([
                 w,
-                0.019286*w + 0.051048*tau3
+                0.019286*w + 0.051048*tau3 + 0.051048 * b_z,
+                wb_z - 100 * b_z,
             ])
         elif self.model == 3:
-            u, v, r = state
+            u, v, b_u, b_v = state
+            b_u += np.random.normal(scale=np.sqrt(dt))
+            wb_u = np.random.normal(scale=np.sqrt(dt))
+            b_v += np.random.normal(scale=np.sqrt(dt))
+            wb_v = np.random.normal(scale=np.sqrt(dt))
             return np.array([
-                0.073047*tau1 -0.134463*u -0.78805*r*v,
-                0.035729*tau2 - 0.11363*v -0.12541*r*u,
-                0.35005*r + 4.0328*tau4 + 57.662*u*v
+                0.073047*tau1 -0.134463*u + 0.073047*b_u - 0.073047*b_v,
+                0.0357755*tau2 - 0.11363*v + 0.035729*b_u + 0.035729*b_v,
+                wb_u - 100 * b_u,
+                wb_v - 100 * b_v,
             ])
     def state_transition_jacobian(self, state):
         if self.model == 1:
             return np.array([
-                [0, 1],
-                [0, 0.35005]
+                [0, 1, 0],
+                [0, 0.35005, 4.0328],
+                [0, 0, -100]
             ])
         elif self.model == 2:
             return np.array([
-                [0, 1],
-                [0, 0.019286]
+                [0, 1, 0],
+                [0, 0.019286, 0.051048],
+                [0, 0, -100]
             ])
         elif self.model == 3:
-            u, v, r = state
+            # u, v = state
             return np.array([
-                [-0.134463, -0.78805*r, -0.78805*v],
-                [-0.12541*r, - 0.11363, -0.12541*u],
-                [57.662*v, 57.662*u, 0.35005*r]
+                [-0.134463, 0, 0.073047, -0.073047],
+                [0, - 0.11363, 0.035729, 0.035729],
+                [0, 0, -100, 0],
+                [0, 0, 0, -100]
             ])
     def observation_function(self, state):
         if self.model == 1:
@@ -124,27 +141,27 @@ class DecoupledObserver:
             ])
         elif self.model == 2:
             return np.array([
-                state[0]
+                state[0], state[1]
             ])
         elif self.model == 3:
             return np.array([
-                state[0], state[1], state[2]
+                state[0], state[1]
             ])
     def observation_jacobian(self, state):
         if self.model == 1:
             return np.array([
-                [1, 0],
-                [0, 1]
+                [1, 0, 0],
+                [0, 1, 0]
             ])
         elif self.model == 2:
             return np.array([
-                [1, 0]
+                [1, 0, 0],
+                [0, 1, 0]
             ])
         elif self.model == 3:
             return np.array([
-                [1, 0, 0],
-                [0, 1, 0],
-                [0, 0, 1]
+                [1, 0, 0, 0],
+                [0, 1, 0, 0]
             ])
 
 
@@ -176,11 +193,11 @@ def stateEstimator(msg):
         # initial_state = np.array([msg.x, msg.y, msg.z, msg.psi, msg.u, msg.v, msg.w, msg.r, msg.bx, msg.by, msg.bz, msg.bpsi])
         if model == 1:
             # initial_state = np.zeros(2)
-            initial_state = np.array([msg.psi, msg.r])
+            initial_state = np.array([msg.psi, msg.r, msg.bpsi])
         elif(model == 2):
-            initial_state = np.array([msg.z, msg.w])
+            initial_state = np.array([msg.z, msg.w, msg.bz])
         elif(model == 3):
-            initial_state = np.array([msg.u, msg.v, msg.r])
+            initial_state = np.array([msg.u, msg.v, msg.bx, msg.by])
 
         init_state = False
 
@@ -222,21 +239,24 @@ def stateEstimator(msg):
 
         state_EKF_msg.psi = ekf.state_estimate[0]
         state_EKF_msg.r = ekf.state_estimate[1]
+        state_EKF_msg.bpsi = ekf.state_estimate[2]
 
     elif model == 2:
-        observed_measurement = np.array([state_z])
+        observed_measurement = np.array([state_z, state_w])
         ekf.update(observed_measurement)
 
         state_EKF_msg.z = ekf.state_estimate[0]
         state_EKF_msg.w = ekf.state_estimate[1]
+        state_EKF_msg.bz = ekf.state_estimate[2]
 
     elif model == 3:
-        observed_measurement = np.array([state_u, state_v, state_yaw_rate])
+        observed_measurement = np.array([state_u, state_v])
         ekf.update(observed_measurement)
 
         state_EKF_msg.u = ekf.state_estimate[0]
         state_EKF_msg.v = ekf.state_estimate[1]
-        state_EKF_msg.r = ekf.state_estimate[2]
+        state_EKF_msg.bx = ekf.state_estimate[2]
+        state_EKF_msg.by = ekf.state_estimate[3]
 
 
     state_publisher.publish(state_EKF_msg)
@@ -254,5 +274,3 @@ if __name__ == "__main__":
         pass
 
     
-
-
