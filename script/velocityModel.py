@@ -20,8 +20,8 @@ def state_transition_function(state, input):
     b_v += np.random.normal(scale=np.sqrt(dt))
     wb_v = np.random.normal(scale=np.sqrt(dt))
     return np.array([
-        0.073047*tau1 -0.134463*u + 0.073047*b_u - 0.073047*b_v,
-        0.0357755*tau2 - 0.11363*v + 0.035729*b_u + 0.035729*b_v,
+        0.073047*tau1 -0.134463*u - 0.7881*v + 0.073047*b_u - 0.073047*b_v,
+        0.0357755*tau2 - 0.1254*u - 0.11363*v + 0.035729*b_u + 0.035729*b_v,
         wb_u - 100 * b_u,
         wb_v - 100 * b_v,
     ])
@@ -29,8 +29,8 @@ def state_transition_function(state, input):
 def state_transition_jacobian(state):
     # u, v = state
     return np.array([
-        [-0.134463, 0, 0.073047, -0.073047],
-        [0, - 0.11363, 0.035729, 0.035729],
+        [-0.134463, -0.7881, 0.073047, -0.073047],
+        [-0.1254, - 0.11363, 0.035729, 0.035729],
         [0, 0, -100, 0],
         [0, 0, 0, -100]
     ])
@@ -88,8 +88,8 @@ def stateEstimator(msg):
     state_yaw_rate = msg.r
 
     initial_covariance = np.zeros(4)     
-    process_noise_covariance = np.diag([0.6, 0.6, 0.6, 0.6])
-    measurement_noise_covariance = np.diag([0.01, 0.01]) #psi, r
+    process_noise_covariance = np.diag([0.6, 0.6, 0.6, 0.6]) #udot, vdot, budot, bvdot
+    measurement_noise_covariance = np.diag([0.01, 0.01]) #u, v
 
 
 

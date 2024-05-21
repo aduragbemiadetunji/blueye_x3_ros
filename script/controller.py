@@ -93,7 +93,6 @@ if __name__ == "__main__":
     control_publisher = rospy.Publisher("/blueye_x3/tau", BlueyeForce, queue_size=10) #thrust_force
 
     subscriber()
-
     
     try:
         rospy.spin()

@@ -37,7 +37,7 @@ if __name__ == "__main__":
 
 
     my_drone = Drone()
-    print('Connected to Drone')
+    print('Internal State Estimate Active')
 
     # Add a callback for the DepthTel message, storing the ID for later use
     # callback_id = my_drone.telemetry.add_msg_callback([bp.DepthTel], callback_depth)

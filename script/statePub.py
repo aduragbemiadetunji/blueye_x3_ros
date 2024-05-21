@@ -21,7 +21,7 @@ last_time = time.time()
 def depthCallback(msg):
     # state_msg = BlueyeState()
     state_msg.header.stamp = rospy.Time.now()
-    state_msg.header.frame_id = "imu_link"
+    state_msg.header.frame_id = "depth_link"
     state_msg.z = msg.depth
 
 def dvlCallback(msg):

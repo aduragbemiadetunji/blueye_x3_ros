@@ -29,7 +29,7 @@ if __name__ == "__main__":
     control_force_publisher = rospy.Publisher("/blueye_x3/thrust_force", BlueyeForce, queue_size=10)
 
     my_drone = Drone()
-    print('Connected to Drone')
+    print('Thrust Data active')
     # my_drone.telemetry.set_msg_publish_frequency(bp.Imu1Tel, 10)
     # my_drone.telemetry.set_msg_publish_frequency(bp.Imu2Tel, 10)
     my_drone.telemetry.set_msg_publish_frequency(bp.ControlForceTel, 10)

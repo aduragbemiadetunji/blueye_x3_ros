@@ -8,67 +8,71 @@ from blueye_x3_ros.msg import BlueyeState, BlueyeForce
 
 import tkinter as tk
 from tkinter import ttk
+import customtkinter as ctk
+
+ctk.set_appearance_mode("system")
+ctk.set_default_color_theme("dark-blue")
 
 input = np.array([0.0, 0.0, 0.0, 0.0]) 
 dt = 0.01
 
-state_publisher = rospy.Publisher("/blueye_x3/state/velocityEKF", BlueyeState, queue_size=10)
+state_publisher = rospy.Publisher("/blueye_x3/state/velocityEKF_tune", BlueyeState, queue_size=10)
 
 
 class ObserverGUI:
     def __init__(self, master):
         self.master = master
-        self.master.title("Blueye Drone Observer Tuner")
+        self.master.title("Blueye Drone Velocity Observer Tuner")
 
         # Pmc1 Slider pnc and mnc
-        self.label_pnc1 = tk.Label(self.master, text="Pnc1")
+        self.label_pnc1 = ctk.CTkLabel(self.master, text="Udot")
         self.label_pnc1.grid(row=0, column=0, padx=10, pady=5)
-        self.slider_pnc1 = ttk.Scale(self.master, from_=0, to=20, length=200, orient="horizontal", command=self.update_ref)
+        self.slider_pnc1 = ctk.CTkSlider(self.master, from_=0, to=100, orientation="horizontal", command=self.update_ref)
         self.slider_pnc1.grid(row=0, column=1, padx=10, pady=5)
-        self.label_pnc1_value = tk.Label(self.master, text="0.2")
+        self.label_pnc1_value = ctk.CTkLabel(self.master, text="0.6")
         self.label_pnc1_value.grid(row=0, column=2, padx=10, pady=5)
 
         # Pmc2 Slider pnc and mnc
-        self.label_pnc2 = tk.Label(self.master, text="Pnc2")
+        self.label_pnc2 = ctk.CTkLabel(self.master, text="Vdot")
         self.label_pnc2.grid(row=1, column=0, padx=10, pady=5)
-        self.slider_pnc2 = ttk.Scale(self.master, from_=0, to=20, length=200, orient="horizontal", command=self.update_ref)
+        self.slider_pnc2 = ctk.CTkSlider(self.master, from_=0, to=20, orientation="horizontal", command=self.update_ref)
         self.slider_pnc2.grid(row=1, column=1, padx=10, pady=5)
-        self.label_pnc2_value = tk.Label(self.master, text="0.2")
+        self.label_pnc2_value = ctk.CTkLabel(self.master, text="0.6")
         self.label_pnc2_value.grid(row=1, column=2, padx=10, pady=5)
 
         # Pmc3 Slider pnc and mnc
-        self.label_pnc3 = tk.Label(self.master, text="Pnc3")
+        self.label_pnc3 = ctk.CTkLabel(self.master, text="B_udot")
         self.label_pnc3.grid(row=2, column=0, padx=10, pady=5)
-        self.slider_pnc3 = ttk.Scale(self.master, from_=0, to=20, length=200, orient="horizontal", command=self.update_ref)
+        self.slider_pnc3 = ctk.CTkSlider(self.master, from_=-2, to=50, orientation="horizontal", command=self.update_ref)
         self.slider_pnc3.grid(row=2, column=1, padx=10, pady=5)
-        self.label_pnc3_value = tk.Label(self.master, text="0.2")
+        self.label_pnc3_value = ctk.CTkLabel(self.master, text="0.6")
         self.label_pnc3_value.grid(row=2, column=2, padx=10, pady=5)
 
         # mnc1 Slider
-        self.label_mnc1 = tk.Label(self.master, text="Mnc1")
+        self.label_mnc1 = ctk.CTkLabel(self.master, text="B_vdot")
         self.label_mnc1.grid(row=3, column=0, padx=10, pady=5)
-        self.slider_mnc1 = ttk.Scale(self.master, from_=0, to=2, length=200, orient="horizontal", command=self.update_ref)
+        self.slider_mnc1 = ctk.CTkSlider(self.master, from_=-2, to=20, orientation="horizontal", command=self.update_ref)
         self.slider_mnc1.grid(row=3, column=1, padx=10, pady=5)
-        self.label_mnc1_value = tk.Label(self.master, text="0.01")
+        self.label_mnc1_value = ctk.CTkLabel(self.master, text="0.6")
         self.label_mnc1_value.grid(row=3, column=2, padx=10, pady=5)
 
         # mnc2 Slider
-        self.label_mnc2 = tk.Label(self.master, text="Mnc2")
+        self.label_mnc2 = ctk.CTkLabel(self.master, text="U")
         self.label_mnc2.grid(row=4, column=0, padx=10, pady=5)
-        self.slider_mnc2 = ttk.Scale(self.master, from_=0, to=2, length=200, orient="horizontal", command=self.update_ref)
+        self.slider_mnc2 = ctk.CTkSlider(self.master, from_=0, to=0.1, orientation="horizontal", command=self.update_ref)
         self.slider_mnc2.grid(row=4, column=1, padx=10, pady=5)
-        self.label_mnc2_value = tk.Label(self.master, text="0.01")
+        self.label_mnc2_value = ctk.CTkLabel(self.master, text="0.01")
         self.label_mnc2_value.grid(row=4, column=2, padx=10, pady=5)
 
         # mnc3 Slider
-        self.label_mnc3 = tk.Label(self.master, text="Mnc3")
+        self.label_mnc3 = ctk.CTkLabel(self.master, text="V")
         self.label_mnc3.grid(row=5, column=0, padx=10, pady=5)
-        self.slider_mnc3 = ttk.Scale(self.master, from_=0, to=2, length=200, orient="horizontal", command=self.update_ref)
+        self.slider_mnc3 = ctk.CTkSlider(self.master, from_=0, to=2, orientation="horizontal", command=self.update_ref)
         self.slider_mnc3.grid(row=5, column=1, padx=10, pady=5)
-        self.label_mnc3_value = tk.Label(self.master, text="0.01")
+        self.label_mnc3_value = ctk.CTkLabel(self.master, text="0.01")
         self.label_mnc3_value.grid(row=5, column=2, padx=10, pady=5)
 
-        self.tune_vals = [0.2, 0.2, 0.2, 0.01, 0.01, 0.0]  # Initial reference values
+        self.tune_vals = [0.6, 0.6, 0.6, 0.6, 0.01, 0.01]  # Initial reference values
         # Initialize ROS node and subscriber
         rospy.init_node("blueye_EKF_velocityModel_publisher")
         self.subscriber()
@@ -80,19 +84,19 @@ class ObserverGUI:
         self.tune_vals[2] = round(self.slider_pnc3.get(), 2)
 
         self.tune_vals[3] = round(self.slider_mnc1.get(), 2)
-        self.tune_vals[4] = round(self.slider_mnc2.get(), 2)
+        self.tune_vals[4] = round(self.slider_mnc2.get(), 5)
         self.tune_vals[5] = round(self.slider_mnc3.get(), 2)
 
-        print(self.tune_vals)
+        # print(self.tune_vals)
 
         # Update labels with current values
-        self.label_pnc1_value.config(text=str(self.tune_vals[0]))
-        self.label_pnc2_value.config(text=str(self.tune_vals[1]))
-        self.label_pnc3_value.config(text=str(self.tune_vals[2]))
+        self.label_pnc1_value.configure(text=str(self.tune_vals[0]))
+        self.label_pnc2_value.configure(text=str(self.tune_vals[1]))
+        self.label_pnc3_value.configure(text=str(self.tune_vals[2]))
 
-        self.label_mnc1_value.config(text=str(self.tune_vals[3]))
-        self.label_mnc2_value.config(text=str(self.tune_vals[4]))
-        self.label_mnc3_value.config(text=str(self.tune_vals[5]))
+        self.label_mnc1_value.configure(text=str(self.tune_vals[3]))
+        self.label_mnc2_value.configure(text=str(self.tune_vals[4]))
+        self.label_mnc3_value.configure(text=str(self.tune_vals[5]))
 
     def subscriber(self):
         rospy.Subscriber("/blueye_x3/thrust_force", BlueyeForce, tauValues)
@@ -113,8 +117,8 @@ def state_transition_function(state, input):
     b_v += np.random.normal(scale=np.sqrt(dt))
     wb_v = np.random.normal(scale=np.sqrt(dt))
     return np.array([
-        0.073047*tau1 -0.134463*u + 0.073047*b_u - 0.073047*b_v,
-        0.0357755*tau2 - 0.11363*v + 0.035729*b_u + 0.035729*b_v,
+        0.073047*tau1 -0.134463*u - 0.7881*v + 0.073047*b_u - 0.073047*b_v,
+        0.0357755*tau2 - 0.1254*u - 0.11363*v + 0.035729*b_u + 0.035729*b_v,
         wb_u - 100 * b_u,
         wb_v - 100 * b_v,
     ])
@@ -122,8 +126,8 @@ def state_transition_function(state, input):
 def state_transition_jacobian(state):
     # u, v = state
     return np.array([
-        [-0.134463, 0, 0.073047, -0.073047],
-        [0, - 0.11363, 0.035729, 0.035729],
+        [-0.134463, -0.7881, 0.073047, -0.073047],
+        [-0.1254, - 0.11363, 0.035729, 0.035729],
         [0, 0, -100, 0],
         [0, 0, 0, -100]
     ])
@@ -184,7 +188,7 @@ def stateEstimator(msg, tune_vals):
     # process_noise_covariance = np.diag([0.6, 0.6, 0.6, 0.6]) #udot, vdot, budot, bvdot
     # measurement_noise_covariance = np.diag([0.01, 0.01]) #u, v
 
-    process_noise_covariance = np.diag([tune_vals[0], tune_vals[1],tune_vals[2],tune_vals[3]]) #udot, vdot, budot, bvdot
+    process_noise_covariance = np.diag([tune_vals[0], tune_vals[1], tune_vals[2], tune_vals[3]]) #udot, vdot, budot, bvdot
     measurement_noise_covariance = np.diag([tune_vals[4], tune_vals[5]]) #u, v
 
 
@@ -223,7 +227,9 @@ def stateEstimator(msg, tune_vals):
 #         pass
 
 def main():
-    root = tk.Tk()
+    # root = tk.Tk()
+    root = ctk.CTk()
+    root.geometry("720x480")
     app = ObserverGUI(root)
     root.mainloop()
 

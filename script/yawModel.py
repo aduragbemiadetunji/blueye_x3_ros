@@ -84,7 +84,7 @@ def stateEstimator(msg):
     state_yaw_rate = msg.r
 
     initial_covariance = np.zeros(3)     
-    process_noise_covariance = np.diag([0.6, 0.6, 0.6])
+    process_noise_covariance = np.diag([0.6, 0.6, 0.6]) #psidot, rdot, bspidot
     measurement_noise_covariance = np.diag([0.01, 0.01]) #psi, r
 
 
