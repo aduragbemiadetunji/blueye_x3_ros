@@ -1,4 +1,4 @@
-#!/home/aduragbemi/.pyenv/shims/python
+#!/usr/bin/env python3
 import time
 import rospy
 from blueye_x3_ros.msg import BlueyeDepth, BlueyeState  # Import the ROS IMU message type
@@ -10,14 +10,10 @@ from blueye.sdk import Drone
 def callback_depth(msg_type, msg):
     # Create an ROS IMU message
     depth_msg = BlueyeDepth()
-    # state_msg = BlueyeState()
 
 
     depth_msg.header.stamp = rospy.Time.now()
     depth_msg.header.frame_id = "depth_link"  # Replace with your frame ID
-
-    # state_msg.header.stamp = rospy.Time.now()
-    # state_msg.header.frame_id = "imu_link"  # Replace with your frame ID
     
     depth_msg.depth = msg.depth.value
     # state_msg.z = msg.depth.value
@@ -37,24 +33,13 @@ if __name__ == "__main__":
     my_drone = Drone()
     print('Depth Sensor active')
 
-    # Add a callback for the DepthTel message, storing the ID for later use
-    # callback_id = my_drone.telemetry.add_msg_callback([bp.DepthTel], callback_depth)
-
     # Adjust the publishing frequency to 5 Hz
     my_drone.telemetry.set_msg_publish_frequency(bp.DepthTel, 5)
 
 
     # Callback is triggered by a separate thread while we sleep here
-    # time.sleep(5)
-
+    #Call the depth value from the protocol and use it in the call back function as a ros topic.
     cb_calibrated = my_drone.telemetry.add_msg_callback([bp.DepthTel], callback_depth)
-
-
-    # Remove the callback using the ID we stored when it was created (not really necessary here
-    # since the my_drone object goes out of scope immediately afterwards)
-    # my_drone.telemetry.remove_msg_callback(callback_id)
-
-
 
     try:
         rospy.spin()

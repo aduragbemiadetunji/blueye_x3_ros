@@ -13,7 +13,7 @@ input = np.array([0.0, 0.0, 0.0, 0.0])
 dt = 0.01
 
 
-state_publisher = rospy.Publisher("/blueye_x3/state/depthEKF", BlueyeState, queue_size=10)
+state_publisher = rospy.Publisher("/blueye_x3/state/depthEKF_new", BlueyeState, queue_size=10)
 
 
 class ObserverGUI:

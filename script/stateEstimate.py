@@ -1,4 +1,4 @@
-#!/home/aduragbemi/.pyenv/shims/python
+#!/usr/bin/env python3
 import time
 import rospy
 from blueye_x3_ros.msg import BlueyeDepth, BlueyeState  # Import the ROS IMU message type
@@ -32,23 +32,14 @@ if __name__ == "__main__":
     rospy.init_node("blueye_state_estimate_publisher")
     state_estimate_publisher = rospy.Publisher("/blueye_x3/state_estimate", BlueyeState, queue_size=10)
 
-    # state_publisher = rospy.Publisher("/blueye_x3/state", BlueyeState, queue_size=10)
-
-
 
     my_drone = Drone()
     print('Internal State Estimate Active')
 
-    # Add a callback for the DepthTel message, storing the ID for later use
-    # callback_id = my_drone.telemetry.add_msg_callback([bp.DepthTel], callback_depth)
-
     # Adjust the publishing frequency to 5 Hz
     my_drone.telemetry.set_msg_publish_frequency(bp.PositionEstimateTel, 5)
 
-
-    # Callback is triggered by a separate thread while we sleep here
-    # time.sleep(5)
-
+    #Getting the state estimate from the internal observer of the Blueye.
     cb_calibrated = my_drone.telemetry.add_msg_callback([bp.PositionEstimateTel], callback_position_estimate)
 
     try:

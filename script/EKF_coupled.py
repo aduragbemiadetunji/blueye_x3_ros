@@ -1,26 +1,16 @@
-#!/home/aduragbemi/.pyenv/shims/python
-
+#!/usr/bin/env python3
 import numpy as np
 import time
 import rospy
 from blueye_x3_ros.msg import BlueyeState, BlueyeForce
 
 input = np.array([0.0, 0.0, 0.0, 0.0]) 
-
-
-
-# class ExtendedKalmanFilter:
-#     def __init__(self, initial_state, initial_covariance, process_noise_covariance, measurement_noise_covariance,
-#                  state_transition_function, observation_function, state_transition_jacobian, observation_jacobian, error_jacobian): , state_transition_function, observation_function, state_transition_jacobian, observation_jacobian, error_jacobian
-        
+    
 class ExtendedKalmanFilter:
     def __init__(self, initial_state, state_transition_function, observation_function, state_transition_jacobian, observation_jacobian, error_jacobian, input):
 
         #####for my project#####
-        # initial_state = np.zeros(12)
         initial_covariance = np.zeros((12, 12))
-        # process_noise_covariance = 0.6*np.eye(12) #process_noise_covariance = 1*np.eye(12) 0.6
-        # measurement_noise_covariance = 0.01*np.eye(8) #0.02 change this too
 
         pnc = [0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6]
         mnc = [0.005, 0.005, 0.002, 0.01, 0.01, 0.01, 0.01, 0.01]
@@ -58,19 +48,6 @@ class ExtendedKalmanFilter:
         self.covariance_estimate = np.dot((I - np.dot(K, H)), self.covariance_estimate)
 
 
-# # Example usage
-# if __name__ == "__main__":
-#     # Define initial values and matrices
-#     initial_state = np.zeros(12)
-#     initial_covariance = np.zeros((12, 12))
-#     process_noise_covariance = np.eye(12)
-#     measurement_noise_covariance = np.eye(3)
-
-#     # Define the state transition function and its Jacobian
-#     # def state_transition_function(state):
-#     #     # Implement the provided non-linear state transition function here
-#     #     pass
-
 def state_transition_function(state, input):
     x, y, z, psi, u, v, w, r, b_x, b_y, b_z, b_psi = state
 
@@ -103,24 +80,6 @@ def state_transition_function(state, input):
         wb_psi - 100 * b_psi
     ])
 
-#     return np.array([
-#         np.cos(psi) * u - np.sin(psi) * v,
-#         np.cos(psi) * v + np.sin(psi) * u,
-#         w,
-#         r,
-#         (1315892839236077 * tau1) / 18014398509481984 - (1212595251356045 * u) / 9007199254740992 - 0.78804538217602188355025252290643 * r * v + (1315892839236077 * np.cos(psi) * b_x) / 18014398509481984 - (1315892839236077 * np.sin(psi) * b_y) / 18014398509481984,
-#         (5149134226861935 * tau2) / 144115188075855872 - (8187638334133163 * v) / 72057594037927936 - 0.12541456625279259105718470889351 * r * u + (5149134226861935 * np.cos(psi) * b_y) / 144115188075855872 + (5149134226861935 * np.sin(psi) * b_x) / 144115188075855872,
-#         (7356743338895695 * b_z) / 144115188075855872 + (7356743338895695 * tau3) / 144115188075855872 + (1389688816717397 * w) / 72057594037927936,
-#         (1135129035283523 * b_psi) / 281474976710656 + (6305868816807027 * r) / 18014398509481984 + (1135129035283523 * tau4) / 281474976710656 + 57.662298912638639724630477211478 * u * v,
-#         wb_x - 100 * b_x,
-#         wb_y - 100 * b_y,
-#         wb_z - 100 * b_z,
-#         wb_psi - 100 * b_psi
-# ])
-
-# def state_transition_jacobian(state):
-#     # Implement the provided state transition Jacobian matrix here
-#     pass
 
 # Define the state transition Jacobian matrix
 def state_transition_jacobian(state):
@@ -142,30 +101,9 @@ def state_transition_jacobian(state):
     ])
 
 
-# Define the observation function and its Jacobian
-# def observation_function(state):
-#     return state[:4]
-
-# def observation_function(state):      #   INITIAL OBSFUNC
-#     z, psi, r = state[2], state[3], state[7]
-#     return np.array([z, psi, r])
-
 def observation_function(state):
     x, y, z, psi, u, v, w, r = state[0], state[1], state[2], state[3], state[4], state[5], state[6], state[7]
     return np.array([x, y, z, psi, u, v, w, r])
-    # x, y, z, psi, r = state[0], state[1], state[2], state[3], state[7]
-    # return np.array([x, y, z, psi, r])
-
-# def observation_jacobian(state):
-#     return np.eye(4)
-
-# # Define the observation Jacobian matrix #INITIAL JACO MATRIX
-# def observation_jacobian(state):
-#     return np.array([
-#         [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-#         [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-#         [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0]
-#     ])
 
 
 def observation_jacobian(state):
@@ -179,17 +117,8 @@ def observation_jacobian(state):
         [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0]
     ])
-    # return np.array([
-    #     [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    #     [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    #     [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    #     [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-    #     [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0]
-    # ])
 
 error_jacobian = np.vstack((np.zeros((8, 4)), np.eye(4)))
-
-# input = np.array([0.5, 0.4, 0.6, 0.4]) #replace this with the values of the input going into the thrusters in body frame
 
 
 def subscriber():
@@ -233,29 +162,12 @@ def stateEstimator(msg):
 
     # Create an instance of the ExtendedKalmanFilter class
     ekf = ExtendedKalmanFilter(initial_state, state_transition_function, observation_function, state_transition_jacobian, observation_jacobian, error_jacobian, input)
-    # ekf = ExtendedKalmanFilter()
-
-
-    # Perform EKF iterations (predict and update)
-    # num_iterations = 5
-
-    # for _ in range(num_iterations):
-    #     ekf.predict()
-    #     observed_measurement = np.array([10.0, 86.0, 3.6])  # Simulated measurement
-    #     ekf.update(observed_measurement)
 
     # Run the predict and update steps
     ekf.predict()
     # Provide the observed measurement for the update step
-    # observed_measurement = np.array([1, 2, 3])  # Replace with actual observed measurement
     observed_measurement = np.array([state_x, state_y, state_z, state_yaw, state_u, state_v, state_w, state_yaw_rate])  # Replace with actual observed measurement
     ekf.update(observed_measurement)
-
-    # Print the final state estimate and covariance estimate
-    # print("Final State Estimate:")
-    # print(ekf.state_estimate[2])
-    # print("Final Covariance Estimate:")
-    # print(ekf.covariance_estimate)
 
     state_EKF_msg.x = ekf.state_estimate[0]
     state_EKF_msg.y = ekf.state_estimate[1]
@@ -270,12 +182,12 @@ def stateEstimator(msg):
     state_EKF_msg.bz = ekf.state_estimate[10]
     state_EKF_msg.bpsi = ekf.state_estimate[11]
 
+    #Publishng all the 12 states from this EKF model.
     state_publisher.publish(state_EKF_msg)
 
 
 if __name__ == "__main__":
     rospy.init_node("blueye_EKF_state_publisher")
-    # state_publisher = rospy.Publisher("/blueye_x3/state/EKF", BlueyeState, queue_size=10)
     state_publisher = rospy.Publisher("/blueye_x3/state/EKF_coupled", BlueyeState, queue_size=10)
     subscriber()
     

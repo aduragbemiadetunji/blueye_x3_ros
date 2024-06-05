@@ -25,7 +25,7 @@ class ObserverGUI:
         self.master.title("Blueye Drone Velocity Observer Tuner")
 
         # Pmc1 Slider pnc and mnc
-        self.label_pnc1 = ctk.CTkLabel(self.master, text="Udot")
+        self.label_pnc1 = ctk.CTkLabel(self.master, text="pnc1")#Udot
         self.label_pnc1.grid(row=0, column=0, padx=10, pady=5)
         self.slider_pnc1 = ctk.CTkSlider(self.master, from_=0, to=100, orientation="horizontal", command=self.update_ref)
         self.slider_pnc1.grid(row=0, column=1, padx=10, pady=5)
@@ -33,7 +33,7 @@ class ObserverGUI:
         self.label_pnc1_value.grid(row=0, column=2, padx=10, pady=5)
 
         # Pmc2 Slider pnc and mnc
-        self.label_pnc2 = ctk.CTkLabel(self.master, text="Vdot")
+        self.label_pnc2 = ctk.CTkLabel(self.master, text="pnc2") #Vdot
         self.label_pnc2.grid(row=1, column=0, padx=10, pady=5)
         self.slider_pnc2 = ctk.CTkSlider(self.master, from_=0, to=20, orientation="horizontal", command=self.update_ref)
         self.slider_pnc2.grid(row=1, column=1, padx=10, pady=5)
@@ -41,7 +41,7 @@ class ObserverGUI:
         self.label_pnc2_value.grid(row=1, column=2, padx=10, pady=5)
 
         # Pmc3 Slider pnc and mnc
-        self.label_pnc3 = ctk.CTkLabel(self.master, text="B_udot")
+        self.label_pnc3 = ctk.CTkLabel(self.master, text="pnc3")#B_udot
         self.label_pnc3.grid(row=2, column=0, padx=10, pady=5)
         self.slider_pnc3 = ctk.CTkSlider(self.master, from_=-2, to=50, orientation="horizontal", command=self.update_ref)
         self.slider_pnc3.grid(row=2, column=1, padx=10, pady=5)
@@ -49,7 +49,7 @@ class ObserverGUI:
         self.label_pnc3_value.grid(row=2, column=2, padx=10, pady=5)
 
         # mnc1 Slider
-        self.label_mnc1 = ctk.CTkLabel(self.master, text="B_vdot")
+        self.label_mnc1 = ctk.CTkLabel(self.master, text="pnc4")#B_vdot
         self.label_mnc1.grid(row=3, column=0, padx=10, pady=5)
         self.slider_mnc1 = ctk.CTkSlider(self.master, from_=-2, to=20, orientation="horizontal", command=self.update_ref)
         self.slider_mnc1.grid(row=3, column=1, padx=10, pady=5)
@@ -57,7 +57,7 @@ class ObserverGUI:
         self.label_mnc1_value.grid(row=3, column=2, padx=10, pady=5)
 
         # mnc2 Slider
-        self.label_mnc2 = ctk.CTkLabel(self.master, text="U")
+        self.label_mnc2 = ctk.CTkLabel(self.master, text="mnc1") #U
         self.label_mnc2.grid(row=4, column=0, padx=10, pady=5)
         self.slider_mnc2 = ctk.CTkSlider(self.master, from_=0, to=0.1, orientation="horizontal", command=self.update_ref)
         self.slider_mnc2.grid(row=4, column=1, padx=10, pady=5)
@@ -65,7 +65,7 @@ class ObserverGUI:
         self.label_mnc2_value.grid(row=4, column=2, padx=10, pady=5)
 
         # mnc3 Slider
-        self.label_mnc3 = ctk.CTkLabel(self.master, text="V")
+        self.label_mnc3 = ctk.CTkLabel(self.master, text="mnc2")#V
         self.label_mnc3.grid(row=5, column=0, padx=10, pady=5)
         self.slider_mnc3 = ctk.CTkSlider(self.master, from_=0, to=2, orientation="horizontal", command=self.update_ref)
         self.slider_mnc3.grid(row=5, column=1, padx=10, pady=5)
@@ -229,7 +229,7 @@ def stateEstimator(msg, tune_vals):
 def main():
     # root = tk.Tk()
     root = ctk.CTk()
-    root.geometry("720x480")
+    # root.geometry("500x480")
     app = ObserverGUI(root)
     root.mainloop()
 

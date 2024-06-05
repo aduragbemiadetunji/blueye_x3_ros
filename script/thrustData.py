@@ -1,4 +1,4 @@
-#!/home/aduragbemi/.pyenv/shims/python
+#!/usr/bin/env python3
 
 import rospy
 
@@ -30,11 +30,9 @@ if __name__ == "__main__":
 
     my_drone = Drone()
     print('Thrust Data active')
-    # my_drone.telemetry.set_msg_publish_frequency(bp.Imu1Tel, 10)
-    # my_drone.telemetry.set_msg_publish_frequency(bp.Imu2Tel, 10)
     my_drone.telemetry.set_msg_publish_frequency(bp.ControlForceTel, 10)
 
-    # cb_raw = my_drone.telemetry.add_msg_callback([bp.Imu1Tel, bp.Imu2Tel], callback_imu_raw)
+    #Get the estimated control force from the protocol
     cb_calibrated = my_drone.telemetry.add_msg_callback([bp.ControlForceTel], callback_control_force)
 
     try:

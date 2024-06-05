@@ -1,4 +1,4 @@
-#!/home/aduragbemi/.pyenv/shims/python
+#!/usr/bin/env python3
 import time
 import rospy
 from blueye_x3_ros.msg import BlueyeState, BlueyeImu, BlueyeDepth  # Import the ROS IMU message type
@@ -33,6 +33,7 @@ def dvlCallback(msg):
     elapsedTime = current_time - last_time
     # print(elapsedTime)
 
+    #Estimating the position from velocity by integrating
     posX += msg.velocity.x * elapsedTime
     posY += msg.velocity.y * elapsedTime
 
@@ -49,36 +50,24 @@ def dvlCallback(msg):
 
 
 def imuCallback(msg):
-    # accelerationX = float(msg.linear_acceleration.x) * 3.9
-    # accelerationY = float(msg.linear_acceleration.y) * 3.9
-    # accelerationZ = float(msg.linear_acceleration.z) * 3.9
-
-    gyro_z = msg.angular_velocity.z
-    state_msg.r = gyro_z
+    #yaw rate from z angular velocity measurement
+    state_msg.r = msg.angular_velocity.z
 
     roll = msg.orientation.x
     pitch = msg.orientation.y
     yaw =  msg.orientation.z
 
-    # pitch = 180 * math.atan(accelerationX / math.sqrt(accelerationY * accelerationY + accelerationZ * accelerationZ)) / math.pi
-    # roll = 180 * math.atan(accelerationY / math.sqrt(accelerationX * accelerationX + accelerationZ * accelerationZ)) / math.pi
-    # yaw = 180 * math.atan(accelerationZ / math.sqrt(accelerationX * accelerationX + accelerationZ * accelerationZ)) / math.pi
 
     state_msg.psi = yaw
 
     state_publisher.publish(state_msg)
 
 
-
-
-
-
 def subscriber():
+    #subscribe to the three topics to build the measured state vector
     rospy.Subscriber("/blueye_x3/depth", BlueyeDepth, depthCallback)
     rospy.Subscriber("/dvl/data", DVL, dvlCallback)
     rospy.Subscriber("/blueye_x3/imu", BlueyeImu, imuCallback)
-
-
 
 
 if __name__ == "__main__":

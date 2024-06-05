@@ -1,7 +1,4 @@
 import numpy as np
-# import time
-# import rospy
-# from blueye_x3_ros.msg import BlueyeState, BlueyeForce
 
 class ExtendedKalmanFilter:
     def __init__(self, initial_state, initial_covariance, process_noise_covariance, measurement_noise_covariance,  state_transition_function, observation_function, state_transition_jacobian, observation_jacobian, error_jacobian, input):
@@ -23,7 +20,7 @@ class ExtendedKalmanFilter:
         # Predict step
         self.state_estimate = self.state_transition_function(self.state_estimate, self.input)
         F = self.state_transition_jacobian(self.state_estimate)
-        self.covariance_estimate = F @ self.covariance_estimate @ F.T + self.Q #  self.error_jacobian @ self.Q  @ (self.error_jacobian).T)
+        self.covariance_estimate = F @ self.covariance_estimate @ F.T + self.Q 
 
     def update(self, observed_measurement):
         # Update step

@@ -1,4 +1,4 @@
-#!/home/aduragbemi/.pyenv/shims/python
+#!/usr/bin/env python3
 from EKF import ExtendedKalmanFilter
 
 import numpy as np
@@ -11,10 +11,9 @@ dt = 0.01
 
 
 def state_transition_function(state, input):
-    # x, y, z, psi, u, v, w, r, b_x, b_y, b_z, b_psi = state
-    tau1, tau2, tau3, tau4 = input[0], input[1], input[2], input[3] #15, 12, 5, 6  # Updated values
-    # Wiener processes for bx, by, bz, and bpsi
+    tau1, tau2, tau3, tau4 = input[0], input[1], input[2], input[3] 
 
+    # Wiener processes for bz
     z, w, b_z = state
     b_z += np.random.normal(scale=np.sqrt(dt))
     wb_z = np.random.normal(scale=np.sqrt(dt))
@@ -44,8 +43,6 @@ def observation_jacobian(state):
 
 
 error_jacobian = np.vstack((np.zeros((8, 4)), np.eye(4)))
-
-
 
 def subscriber():
     rospy.Subscriber("/blueye_x3/thrust_force", BlueyeForce, tauValues)
@@ -94,8 +91,6 @@ def stateEstimator(msg):
     # Run the predict and update steps
     ekf.predict()
     # Provide the observed measurement for the update step
-    # observed_measurement = np.array([1, 2, 3])  # Replace with actual observed measurement
-
     observed_measurement = np.array([state_z, state_w])
     ekf.update(observed_measurement)
 
@@ -103,12 +98,12 @@ def stateEstimator(msg):
     state_EKF_msg.w = ekf.state_estimate[1]
     state_EKF_msg.bz = ekf.state_estimate[2]
 
+    #Publishng the three states(z, w, bz) from this EKF model.
     state_publisher.publish(state_EKF_msg)
 
 
 if __name__ == "__main__":
     rospy.init_node("blueye_EKF_depthModel_publisher")
-    # state_publisher = rospy.Publisher("/blueye_x3/state/EKF", BlueyeState, queue_size=10)
     state_publisher = rospy.Publisher("/blueye_x3/state/depthEKF", BlueyeState, queue_size=10)
     subscriber()
     

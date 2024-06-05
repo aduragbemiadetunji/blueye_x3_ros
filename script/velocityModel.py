@@ -1,4 +1,4 @@
-#!/home/aduragbemi/.pyenv/shims/python
+#!/usr/bin/env python3
 from EKF import ExtendedKalmanFilter
 
 import numpy as np
@@ -10,9 +10,8 @@ input = np.array([0.0, 0.0, 0.0, 0.0])
 dt = 0.01
 
 def state_transition_function(state, input):
-    # x, y, z, psi, u, v, w, r, b_x, b_y, b_z, b_psi = state
     tau1, tau2, tau3, tau4 = input[0], input[1], input[2], input[3] #15, 12, 5, 6  # Updated values
-    # Wiener processes for bx, by, bz, and bpsi
+    # Wiener processes for bu, bv
 
     u, v, b_u, b_v = state
     b_u += np.random.normal(scale=np.sqrt(dt))
@@ -66,8 +65,6 @@ def stateEstimator(msg):
     global input
     init_state = True
 
-    model = 3 #1 for yaw and yawrate, 2 for depth and w, 3 for all velocities.
-
     initial_state = np.zeros(4)
     state_EKF_msg = BlueyeState()
 
@@ -94,14 +91,11 @@ def stateEstimator(msg):
 
 
     # Create an instance of the ExtendedKalmanFilter class
-
     ekf = ExtendedKalmanFilter(initial_state, initial_covariance, process_noise_covariance, measurement_noise_covariance, state_transition_function, observation_function, state_transition_jacobian, observation_jacobian, error_jacobian, input)
-    # ekf = ExtendedKalmanFilter()
 
     # Run the predict and update steps
     ekf.predict()
     # Provide the observed measurement for the update step
-    # observed_measurement = np.array([1, 2, 3])  # Replace with actual observed measurement
 
     observed_measurement = np.array([state_u, state_v])
     ekf.update(observed_measurement)
@@ -111,13 +105,12 @@ def stateEstimator(msg):
     state_EKF_msg.bx = ekf.state_estimate[2]
     state_EKF_msg.by = ekf.state_estimate[3]
 
-
+    #Publishng the 4 states(u, v, bu, bv) from this EKF model.
     state_publisher.publish(state_EKF_msg)
 
 
 if __name__ == "__main__":
     rospy.init_node("blueye_EKF_velocityModel_publisher")
-    # state_publisher = rospy.Publisher("/blueye_x3/state/EKF", BlueyeState, queue_size=10)
     state_publisher = rospy.Publisher("/blueye_x3/state/velocityEKF", BlueyeState, queue_size=10)
     subscriber()
     

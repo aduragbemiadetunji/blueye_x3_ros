@@ -1,0 +1,8 @@
+[Desktop Entry]
+Version=1.0
+Name=Blueye Interface
+Comment=Start ROS launch files and node
+Exec=#<-----replace with the path to BlueyeController.sh----->
+Icon=utilities-terminal
+Terminal=true
+Type=Application

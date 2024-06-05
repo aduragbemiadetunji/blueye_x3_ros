@@ -1,3 +1,9 @@
+<!-- Launch file for all the sensor data needed to run the script. Remeber to build this package to allow custom messages to work.
+
+      Ensure that the IP address of the DVL is correct.
+      To confirm, launch the IP address on a browser, you should see the waterlinked GUI with the DVL data representation.
+ -->
+
 <launch>
     <node respawn="true" pkg="blueye_x3_ros" type="depthData.py" name="depthData" output="screen"></node>
     <node respawn="true" pkg="blueye_x3_ros" type="imuData.py" name="imuData" output="screen"></node>
@@ -8,7 +14,6 @@
       <!-- Launch the waterlinked_a50_ros_driver publisher.py node -->
   <node name="waterlinked_a50_driver" pkg="waterlinked_a50_ros_driver" type="publisher.py" output="screen">
     <param name="ip" value="192.168.1.99" />
-    <!-- Add any other required parameters here if needed -->
   </node>
   
 </launch>

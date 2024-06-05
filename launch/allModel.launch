@@ -1,7 +1,12 @@
+<!-- 
+    Launch file that has all the models as described in the Master Thesis by Aduragbemi Adetunji.
+ -->
+
+
 <launch>
     <node respawn="true" pkg="blueye_x3_ros" type="depthModel.py" name="depthModel" output="screen"></node>
     <node respawn="true" pkg="blueye_x3_ros" type="yawModel.py" name="yawModel" output="screen"></node>
     <node respawn="true" pkg="blueye_x3_ros" type="velocityModel.py" name="velocityModel" output="screen"></node>
     <node respawn="true" pkg="blueye_x3_ros" type="EKF_coupled.py" name="EKF_coupled" output="screen"></node>
-    <node respawn="true" pkg="blueye_x3_ros" type="decoupled_EKF.py" name="decoupled_EKF" output="screen"></node>
+    <node respawn="true" pkg="blueye_x3_ros" type="EKF_decoupled.py" name="EKF_decoupled" output="screen"></node>
 </launch>
